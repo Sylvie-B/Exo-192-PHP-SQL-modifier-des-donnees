@@ -8,15 +8,41 @@
  * 6. Modifiez cet utilisateur directement après avoir envoyé les données ( on imagine que vous vous êtes trompé )
  */
 
-
+$server = 'localhost';
+$user = 'root';
+$password = '';
+$db = 'table_test_php';
 
 // TODO Votre code ici.
 try {
-    ...
+    $bdd = new PDO("mysql:host=$server;dbname=$db;charset=utf8", $user, $password);
+    $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $sql = "
+        INSERT INTO user (nom, prenom, rue, numero, code_postal, ville, pays, mail)
+        VALUES ('Marle', 'Sylvie', 'rue de la fontaine', 20, 59610, 'Fourmies', 'France', 'helio@live.fr')
+        ";
+
+    $bdd->exec($sql);
+
 }
-catch...
+catch (PDOException $e) {
+    echo "Une erreur est survenue : ".$e->getMessage()."<br>";
+    $bdd->rollBack();
+}
 
+$id = $bdd->lastInsertId();
 
+$stm = $bdd->prepare("
+    UPDATE user SET nom='Bataille' WHERE id = $id
+");
+
+$stm->bindParam('nom', $nom);
+$stm->bindParam('id', $id);
+
+$stm->execute();
+
+echo "user update";
 
 /**
  * Théorie
